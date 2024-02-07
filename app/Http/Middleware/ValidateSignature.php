@@ -2,9 +2,13 @@
 
 namespace App\Http\Middleware;
 
-use Illuminate\Routing\Middleware\ValidateSignature as Middleware;
-
-class ValidateSignature extends Middleware
+use Closure;
+use Illuminate\Routing\Middleware\ValidateSignature as BaseMiddleware;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Routing\Exceptions\InvalidSignatureException;
+class ValidateSignature extends BaseMiddleware
 {
     /**
      * The names of the query string parameters that should be ignored.
@@ -19,4 +23,7 @@ class ValidateSignature extends Middleware
         // 'utm_source',
         // 'utm_term',
     ];
+
+
 }
+

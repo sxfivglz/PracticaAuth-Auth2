@@ -59,10 +59,7 @@ document.addEventListener('DOMContentLoaded', function () {
     }
 
     function handleValidationFailure(callback) {
-        // Manejar el fallo de validación de reCAPTCHA aquí
-        // Puedes personalizar este manejo según tus necesidades específicas
-
-        // Llama al callback con false, indicando que reCAPTCHA no es válido
+        
         if (typeof callback === 'function') {
             callback(false);
         }

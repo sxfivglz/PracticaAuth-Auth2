@@ -56,7 +56,7 @@ return [
             'driver' => 'stack',
             'channels' => ['single'],
             'ignore_exceptions' => false,
-            'level' => env('LOG_LEVEL', 'debug'),
+            
         ],
 
         'single' => [

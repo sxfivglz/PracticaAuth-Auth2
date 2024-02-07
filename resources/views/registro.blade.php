@@ -12,7 +12,8 @@
         </div>
         @endif
 
-        <input type="hidden" id="recaptchaKey" name="recaptcha" value="{{ env('GOOGLE_RECAPTCHA_KEY') }}">
+        <input type="hidden" id="recaptchaKey" name="recaptcha" value="{{ env('GOOGLE_RECAPTCHA_KEY') }}"> 
+       
 
         <div class="form-group">
             <label for="nombre">Nombre</label>

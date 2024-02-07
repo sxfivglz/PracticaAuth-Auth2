@@ -13,6 +13,7 @@
         {{ session('error') }}
     </div>
     @endif
+    
     <h1>Hola, {{ $usuario->nombre }}</h1>
     <p>Correo: {{ $usuario->correo }}</p>
 
