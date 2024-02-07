@@ -11,6 +11,6 @@ class LogInicioSesionExitoso implements ShouldQueue
 {
     public function handle(InicioSesionExitoso $event)
     {
-        Log::info('Inicio de sesión exitoso: ' . $event->user->correo);
+        Log::info('Inicio de sesión exitoso: ' . $event->user->correo . ' con la IP: ' . $event->request->ip());
     }
 }

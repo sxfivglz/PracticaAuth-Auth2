@@ -21,12 +21,21 @@ use Illuminate\Database\QueryException;
 use Illuminate\Support\Facades\DB;
 use PDOException;
 use Illuminate\Routing\Exceptions\InvalidSignatureException;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Cache\RateLimiter;
 
 class UsuarioController extends Controller
+
 {
+      public function __construct()
+    {
+        $this->middleware('throttle:5,60')->only(['registrarUsuario', 'iniciarSesion']);
+    }
+
    public function registrarUsuario(Request $request)
     {
     try {
+        
         $validator = Validator::make($request->all(), [
             'nombre' => 'required|max:255',
             'correo' => 'required|email|max:255|unique:usuarios',
@@ -109,14 +118,22 @@ class UsuarioController extends Controller
         ]);
 
         return redirect()->route('registro')->with(['error' => 'Algo salió mal durante el registro. Contacte al administrador.']);
+    } catch(QueryException $e) {
+        Log::error('Error al registrar al usuario - Error de consulta: ' . $e->getMessage(), [
+            'nombre' => $request->nombre,
+            'correo' => $request->correo,
+            'location' => 'registrarUsuario',
+        ]);
+
+        return redirect()->route('registro')->with(['error' => 'Algo salió mal durante el registro. Contacte al administrador.']);
     }
     }
 
 
    public function iniciarSesion(Request $request)
     {
+            Log::info('Intento de inicio de sesión');
     try {
-        Log::info('Intento de inicio de sesión');
 
         $throttleData = [
             'maxAttempts' => 3,
@@ -160,7 +177,8 @@ class UsuarioController extends Controller
                     return redirect()->route('inicioSesion')->withErrors(['error' => 'Error al enviar el código de verificación.'])->withInput();
                 }
             } else {
-                Log::info('Usuario autentificado');
+                Log::info('Usuario comun');
+
                 $rutaFirmada = URL::temporarySignedRoute('inicioUsuario', now()->addMinutes(2), ['usuario' => $user->id]);
                 return redirect()->away($rutaFirmada);
             }
@@ -177,9 +195,15 @@ class UsuarioController extends Controller
         // Manejar otras excepciones
         Log::error('Error al intentar iniciar sesión: ' . $e->getMessage());
         return redirect()->route('inicioSesion')->withErrors(['error' => 'Error al intentar iniciar sesión.'])->withInput();
-    }
+    }catch (QueryException $e) {
+        Log::error('Error al intentar iniciar sesión - Error de consulta: ' . $e->getMessage());
+        return redirect()->route('inicioSesion')->withErrors(['error' => 'Error al intentar iniciar sesión.'])->withInput();
+    }catch (PDOException $e) {
+        Log::error('Error al intentar iniciar sesión - Error de base de datos: ' . $e->getMessage());
+        return redirect()->route('inicioSesion')->withErrors(['error' => 'Error al intentar iniciar sesión.'])->withInput();
     }
 
+    }
 
 
     private function sendVerificationEmail($user, $codigo2fa)
@@ -188,8 +212,8 @@ class UsuarioController extends Controller
         Log::error('Error al enviar el correo electrónico a ' . $user->correo);
     }
 
-public function verificar2FA(Request $request)
-{
+    public function verificar2FA(Request $request)
+{   
     try {
         if (!Auth::check()) {
             Log::info('El usuario no ha iniciado sesión o no es administrador: '. $request->correo);
@@ -208,8 +232,8 @@ public function verificar2FA(Request $request)
 
         // Verificar si el código 2FA del rol está establecido
         if (!$codigo2fa) {
-            Log::info('El rol del usuario no tiene un código 2FA establecido.');
-            return back()->with(['mensaje' => 'El rol no tiene un código 2FA establecido.']);
+            Log::info('El rol del usuario no tiene un código 2FA establecido o el codigo ya no funciona.');
+            return back()->with(['mensaje' => 'El código 2FA no está establecido.']);
         }
 
         $codigo = $request->codigo_2fa;
@@ -250,7 +274,7 @@ public function verificar2FA(Request $request)
             Log::info('Correo electrónico reenviado con éxito a ' . $usuario->correo);
               $url = URL::temporarySignedRoute('verificacion.2fa', now()->addMinutes(5), ['usuario' => $usuario->id]);
             Log::info('URL firmada: ' . $url);
-            return redirect()->to($url)->with(['mensaje' => 'Código reenviado.']);
+            return redirect()->to($url)->with(['exito-codigo' => 'Código reenviado.']);
 
         } catch (\Exception $e) {
             Log::error('Error al reenviar el código 2FA: ' . $e->getMessage());

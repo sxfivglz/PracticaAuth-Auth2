@@ -63,7 +63,6 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Oculta el mensaje de éxito después de 5 segundos
         setTimeout(function(){
             var exitoMensaje = document.getElementById('exitoMensaje');
             if (exitoMensaje) {
@@ -71,7 +70,6 @@
             }
         }, 2000);
 
-        // Oculta el mensaje de error después de 5 segundos
         setTimeout(function(){
             var errorMensaje = document.getElementById('errorMensaje');
             if (errorMensaje) {

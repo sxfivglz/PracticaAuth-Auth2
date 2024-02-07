@@ -16,9 +16,8 @@ use App\Http\Controllers\VistaController;
 */
 // Rutas públicas
 Route::get('/', [VistaController::class, 'mostrarFormularioRegistro'])->name('registro');
-Route::post('/registrar', [UsuarioController::class, 'registrarUsuario'])->name('registrar');
 Route::get('/inicioSesion', [VistaController::class, 'mostrarFormularioInicioSesion'])->name('inicioSesion');
-Route::post('/iniciarSesion', [UsuarioController::class, 'iniciarSesion'])->name('iniciarSesion');
+
 
 // Rutas middleware
 Route::middleware(['auth', 'verifyTemporarySignedRoute'])->group(function () {
@@ -35,3 +34,9 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/reenviar-2fa', [UsuarioController::class, 'reenviarCodigo2FA'])->name('reenviar.2fa');
      Route::put('/actualizarUsuario', [UsuarioController::class, 'actualizarUsuario'])->name('actualizarUsuario');
 });
+
+Route::middleware(['throttle:3,15'])->group(function () {
+  Route::post('/iniciarSesion', [UsuarioController::class, 'iniciarSesion'])->name('iniciarSesion');
+  Route::post('/registrar', [UsuarioController::class, 'registrarUsuario'])->name('registrar');
+});
+

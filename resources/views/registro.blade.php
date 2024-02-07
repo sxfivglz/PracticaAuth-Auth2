@@ -11,7 +11,12 @@
             {{ session('error') }}
         </div>
         @endif
-
+        @if (session('throttle_error'))
+        <div class="alert alert-danger">
+            {{session('throttle_error') }}
+        </div>
+        @endif
+   
         <input type="hidden" id="recaptchaKey" name="recaptcha" value="{{ env('GOOGLE_RECAPTCHA_KEY') }}"> 
        
 

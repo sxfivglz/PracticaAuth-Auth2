@@ -10,6 +10,10 @@
                 @if(session('mensaje'))
                 <div class="alert alert-danger">{{ session('mensaje') }}</div>
                 @endif
+                @if(session('exito-codigo'))
+
+                <div class="alert alert-success">{{ session('exito-codigo') }}</div>
+                @endif
 
                 <form method="POST" action="{{ route('verificar.2fa') }}">
                     @csrf
@@ -37,8 +41,31 @@
                         </div>
                     </div>
                 </form>
+                {{-- Boton logout --}}
+                <form method="POST" action="{{ route('cerrarSesion') }}">
+                    @csrf
+                    <div class="form-group row mb-0">
+                        <div class="col-md-8 offset-md-4 mt-4">
+                            <button type="submit" class="btn btn-danger">Salir</button>
+                        </div>
             </div>
         </div>
     </div>
 </div>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        setTimeout(function() {
+            var mensajeElement = document.getElementById("mensaje");
+            if (mensajeElement) {
+                mensajeElement.style.display = "none";
+            }
+        }, 2000);
+        setTimeout(function() {
+            var exitoCodigoElement = document.getElementById("exito-codigo");
+            if (exitoCodigoElement) {
+                exitoCodigoElement.style.display = "none";
+            }
+        }, 2000);
+    });
+</script>
 @endsection
