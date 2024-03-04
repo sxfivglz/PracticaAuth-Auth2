@@ -4,6 +4,7 @@ namespace App\Rules;
 
 use Illuminate\Contracts\Validation\Rule;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 
 class ReCaptcha implements Rule
 {
@@ -26,6 +27,11 @@ public function passes($attribute, $value)
     if ($decodedResponse->success) {
         return true;
     } else {
+
+        //Redirigir a registro con error
+        redirect()->route('registro')->with(['mensaje' => 'El google reCAPTCHA es necesario, confirme las credenciales o inténtelo más tarde.']);
+
+        
         Log::error('reCAPTCHA verification failed. Response: ' . $response->body());
 
         return false;

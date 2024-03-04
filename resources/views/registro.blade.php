@@ -22,7 +22,7 @@
 
         <div class="form-group">
             <label for="nombre">Nombre</label>
-            <input type="text" id="nombre" name="nombre" placeholder="Ej. Juan Pérez" class="form-control" required autocomplete="name">
+            <input type="text" id="nombre" name="nombre" placeholder="Ej. Juan Pérez" maxlength="60" class="form-control" required autocomplete="name" >
         
             <span id="nombreError" class="text-danger"></span>
             @error('nombre')
@@ -41,7 +41,7 @@
 
         <div class="form-group">
             <label for="password">Contraseña</label>
-            <input type="password" id="password" placeholder="******" name="contrasena" class="form-control" required
+            <input type="password" maxlength="60" id="password" placeholder="******" name="contrasena" class="form-control" required
                 autocomplete="current-password">
             <span id="passwordError" class="text-danger"></span>
             @error('password')

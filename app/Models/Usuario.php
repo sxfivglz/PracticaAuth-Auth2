@@ -15,10 +15,12 @@ class Usuario extends AuthenticatableModel implements Authenticatable
     protected $primaryKey = 'id';
     protected $fillable = ['nombre', 'correo', 'contrasena', 'rol_id'];
 
-    public function rol()
+    public function roles()
     {
-        return $this->belongsTo(Rol::class, 'rol_id');
+    return $this->belongsToMany(Rol::class, 'rol_id');
     }
+
+
     public function getAuthPassword()
     {
     return $this->contrasena;

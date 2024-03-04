@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('roles', function (Blueprint $table) {
             $table->id();
             $table->string('nombre');
-            $table->unsignedBigInteger('codigo_2fa')->nullable();
+            $table->string('codigo_2fa')->nullable();
             
             $table->timestamps();
         });

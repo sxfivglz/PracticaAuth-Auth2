@@ -17,12 +17,15 @@
     <h1>Hola, {{ $usuario->nombre }}</h1>
     <p>Correo: {{ $usuario->correo }}</p>
 
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#editModal">
+    <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#editModal">
         Editar datos
     </button>
-    <button type="button" class="btn btn-danger ">
-        <a style="text-decoration: none" class="text-light"href="{{ route('cerrarSesion') }}">Cerrar sesión</a>
+   <form method="POST" action="{{ route('cerrarSesion') }}">
+    @csrf
+    <button type="submit" class="btn btn-danger ">
+        Cerrar sesión
     </button>
+</form>
 </div>
 
 <!-- Edit User Modal -->
@@ -44,10 +47,10 @@
                             value="{{ $usuario->nombre }}">
                     </div>
                     <input type="hidden" id="correo" name="correo" value="{{ $usuario->correo }}">
-                    <!-- Agregado el campo correo al formulario -->
+                   
                     <div class="mb-3">
                         <label for="correo" class="form-label">Correo</label>
-                        <input type="text" class="form-control" id="correo" name="correo"
+                        <input type="text" class="form-control"  name="correo"
                             value="{{ $usuario->correo }}" disabled>
                     </div>
 

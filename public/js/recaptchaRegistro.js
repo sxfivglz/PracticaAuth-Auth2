@@ -9,35 +9,39 @@ document.addEventListener('DOMContentLoaded', function () {
     var nameError = document.getElementById('nombreError');
     var submitButton = document.getElementById('btn');
     var recaptchaKey = document.getElementsByName('recaptcha')[0].value;
-  
+
+    // Función para mostrar alerta de error
+    function showAlert(errorMessage) {
+        alert(errorMessage);
+    }
 
     if (submitButton) {
-        
+
         nameInput.addEventListener('input', validateName);
         passwordInput.addEventListener('input', validatePassword);
         confirmPasswordInput.addEventListener('input', validateFields);
         emailInput.addEventListener('input', validateFields);
 
         submitButton.addEventListener('click', function (event) {
-            event.preventDefault(); 
+            event.preventDefault();
 
             resetErrorMessages();
             validateFields(function (isValid) {
                 if (isValid) {
-                    validateRecaptcha(recaptchaKey, function (isRecaptchaValid) {
+                    validateRecaptcha(recaptchaKey, function (isRecaptchaValid, errorMessage) {
                         if (isRecaptchaValid) {
                             formReg.submit();
                         } else {
-                            console.error('La validación de reCAPTCHA falló.');
+                            showAlert(errorMessage);
                         }
                     });
                 } else {
-                    console.error('La validación de campos falló.');
+                    showAlert('Hubo un error al validar los campos.');
                 }
             });
         });
     } else {
-        console.error('Botón de envío no encontrado.');
+        showAlert('Hubo un error al encontrar el botón de envío.');
     }
 
     function validateFields(callback) {
@@ -58,7 +62,7 @@ document.addEventListener('DOMContentLoaded', function () {
         validateName();
         updateSubmitButtonState();
 
-       
+
         if (typeof callback === 'function') {
             callback(submitButton.disabled === false);
         }
@@ -67,28 +71,19 @@ document.addEventListener('DOMContentLoaded', function () {
     function validateRecaptcha(recaptchaKey, callback) {
         try {
             if (!recaptchaKey) {
-                console.error('Clave de reCAPTCHA no encontrada.');
-                if (typeof callback === 'function') {
-                    callback(false); // Llama al callback con false si no hay clave de reCAPTCHA
-                }
+                callback(false, 'Clave de reCAPTCHA no encontrada.');
                 return;
             }
 
             grecaptcha.ready(function () {
                 grecaptcha.execute(recaptchaKey, { action: 'submit' }).then(function (token) {
                     handleRecaptchaSuccess(token, callback);
-                }, function (error) {
-                    console.error('Error al obtener el token de reCAPTCHA: ', error);
-                    if (typeof callback === 'function') {
-                        callback(false);
-                    }
+                }).catch(function (error) {
+                    callback(false, 'Hubo un error al obtener el token de reCAPTCHA. Por favor, recarga la página o verifica tu conexión a internet.');
                 });
             });
         } catch (error) {
-            console.error('Error al ejecutar reCAPTCHA: ', error);
-            if (typeof callback === 'function') {
-                callback(false); 
-            }
+            callback(false, 'Error al ejecutar reCAPTCHA: ' + error.message);
         }
     }
 
@@ -108,9 +103,8 @@ document.addEventListener('DOMContentLoaded', function () {
         var event = new CustomEvent('recaptchaValidated');
         formReg.dispatchEvent(event);
 
-
         if (typeof callback === 'function') {
-            callback(true);
+            callback(true, '');
         }
     }
 

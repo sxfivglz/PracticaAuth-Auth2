@@ -42,6 +42,7 @@ class Handler extends ExceptionHandler
 {
     if ($exception instanceof InvalidCredentialsException) {
         return response()->json(['error' => $exception->getMessage()], 401);
+        
     }
 
     if ($exception instanceof MethodNotAllowedHttpException) {
@@ -64,8 +65,15 @@ class Handler extends ExceptionHandler
     $remainingAttempts = $exception->getHeaders()['X-RateLimit-Remaining'] ?? null;
 
     if ($remainingAttempts !== null && $retryAfter !== null) {
-        $retryAfterInMinutes = round($retryAfter / 60);
-        $mensajeError = "Demasiadas solicitudes. Inténtelo de nuevo en $retryAfterInMinutes minutos.";
+        // $retryAfterInMinutes = round($retryAfter / 60);
+        // $mensajeError = "Demasiadas solicitudes. Inténtelo de nuevo en $retryAfterInMinutes minutos.";
+      //Mostrar los minutos y segundos restantes en 60 segundos
+        $retryAfterInMinutes = floor($retryAfter / 60);
+        $retryAfterInSeconds = $retryAfter % 60;
+        $mensajeError = "Demasiadas solicitudes. Inténtelo de nuevo en $retryAfterInMinutes minutos y $retryAfterInSeconds segundos.";
+        
+
+        
     } else {
         $mensajeError = 'Demasiadas solicitudes. Inténtelo de nuevo más tarde.';
     }

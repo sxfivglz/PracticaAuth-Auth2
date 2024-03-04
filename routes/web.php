@@ -24,19 +24,25 @@ Route::middleware(['auth', 'verifyTemporarySignedRoute'])->group(function () {
     Route::get('/correo', [VistaController::class, 'mensajeCorreo'])->name('correo');
     Route::get('/inicioAdmin', [VistaController::class, 'mostrarInicioAdministrador'])->name('inicioAdministrador');
     Route::get('/inicioUsuario', [VistaController::class, 'mostrarInicioUsuario'])->name('inicioUsuario');
-    Route::get('/cerrarSesion', [UsuarioController::class, 'cerrarSesion'])->name('cerrarSesion');
-    Route::get('/verificacion-2fa', [VistaController::class, 'mostrarFormulario2FA'])->name('verificacion.2fa');
+  
+
 
 });
 Route::middleware(['auth'])->group(function () {
-    Route::get('/cerrarSesion', [UsuarioController::class, 'cerrarSesion'])->name('cerrarSesion');
-    Route::post('/verificar-2fa', [UsuarioController::class, 'verificar2FA'])->name('verificar.2fa');
-    Route::post('/reenviar-2fa', [UsuarioController::class, 'reenviarCodigo2FA'])->name('reenviar.2fa');
+      Route::post('/cerrarSesion', [UsuarioController::class, 'cerrarSesion'])->name('cerrarSesion');
      Route::put('/actualizarUsuario', [UsuarioController::class, 'actualizarUsuario'])->name('actualizarUsuario');
 });
 
-Route::middleware(['throttle:3,15'])->group(function () {
-  Route::post('/iniciarSesion', [UsuarioController::class, 'iniciarSesion'])->name('iniciarSesion');
-  Route::post('/registrar', [UsuarioController::class, 'registrarUsuario'])->name('registrar');
+//Rutas de verifyTemporarySignedRoute
+Route::middleware(['verifyTemporarySignedRoute'])->group(function () {
+        Route::get('/verificacion-2fa', [VistaController::class, 'mostrarFormulario2FA'])->name('verificacion.2fa');
 });
 
+Route::middleware(['throttle:5,1'])->group(function () {
+  Route::post('/iniciarSesion', [UsuarioController::class, 'iniciarSesion'])->name('iniciarSesion');
+  Route::post('/registrar', [UsuarioController::class, 'registrarUsuario'])->name('registrar');
+  Route::post('/verificar-2fa', [UsuarioController::class, 'verificar2FA'])->name('verificar.2fa');
+  Route::post('/reenviar-2fa', [UsuarioController::class, 'reenviarCodigo2FA'])->name('reenviar.2fa');
+});
+
+  
