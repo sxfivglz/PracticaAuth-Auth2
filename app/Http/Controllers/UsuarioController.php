@@ -144,6 +144,12 @@ namespace App\Http\Controllers;
             if ($validator->fails()) {
                 return redirect()->route('inicioSesion')->withErrors($validator)->withInput();
             }
+            //Verificar si el usuario existe 
+            $usuario_existe = Usuario::where('correo', $request->correo)->first();
+            if (!$usuario_existe) {
+                Log::error('Error al iniciar sesión: El usuario no existe.');
+                return redirect()->route('inicioSesion')->withErrors(['error' => 'Error al iniciar sesión.'])->withInput();
+            }
 
              $credentials = $request->only('correo', 'contrasena');
             $usuario = ['correo' => $credentials['correo'], 'password' => ($credentials['contrasena'])];
@@ -153,6 +159,7 @@ namespace App\Http\Controllers;
             ->select('usuarios.id', 'usuarios.nombre', 'usuarios.correo', 'usuarios.contrasena', 'usuarios.rol_id', 'roles.nombre as rol')
             ->where('usuarios.correo', $usuario['correo'])
             ->first(); 
+            
         
                 //Aqui quiero que en lugar de buscar el rol_id, busque el rol 'administrador' en el usuario y si es asi, que haga lo que sigue
                 if ($query->rol == 'administrador') {
