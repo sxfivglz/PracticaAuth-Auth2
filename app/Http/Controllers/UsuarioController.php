@@ -218,6 +218,7 @@ namespace App\Http\Controllers;
             try{
             Mail::to($user->correo)->send(new TwoFactorAuthenticationMail($codigo2fa, ['nombre' => $user->nombre, 'correo' => $user->correo]));
             Log::info('Correo electrónico enviado con éxito a ' . $user->correo);
+            
             } catch (\Swift_TransportException $e) {
                 Log::error('Error al enviar el correo electrónico: ' . $e->getMessage());
 

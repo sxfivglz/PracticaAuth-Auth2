@@ -72,7 +72,7 @@ class VistaController extends Controller
                return redirect()->route('inicioSesion')->with(['mensaje' => 'Acceso no autorizado, inicie sesión.']);
         }
 
-        return view('correo.2FA');
+        return view('Correo.2FA');
     }
 
 }
