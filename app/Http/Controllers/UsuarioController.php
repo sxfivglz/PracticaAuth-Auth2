@@ -149,8 +149,10 @@ namespace App\Http\Controllers;
             if (!$usuario_existe) {
                 Log::error('Error al iniciar sesión: El usuario no existe.');
                 return redirect()->route('inicioSesion')->withErrors(['error' => 'Error al iniciar sesión.'])->withInput();
+            }else if(!Hash::check($request->contrasena, $usuario_existe->contrasena)){
+                Log::error('Error al iniciar sesión: La contraseña no es válida.');
+                return redirect()->route('inicioSesion')->withErrors(['error' => 'Error al iniciar sesión.'])->withInput();
             }
-
              $credentials = $request->only('correo', 'contrasena');
             $usuario = ['correo' => $credentials['correo'], 'password' => ($credentials['contrasena'])];
 
@@ -160,13 +162,11 @@ namespace App\Http\Controllers;
             ->where('usuarios.correo', $usuario['correo'])
             ->first(); 
             
-        
-                //Aqui quiero que en lugar de buscar el rol_id, busque el rol 'administrador' en el usuario y si es asi, que haga lo que sigue
                 if ($query->rol == 'administrador') {
                     $codigo2fa = Crypt::encrypt(random_int(100000, 999999));
                     Rol::where('nombre', 'administrador')->update(['codigo_2fa' => $codigo2fa]);
-
                     try {
+                        //Convertir $query a objeto
                         
                         $this->sendVerificationEmail($query, Crypt::decrypt($codigo2fa));
                         $rutaFirmada = URL::temporarySignedRoute('verificacion.2fa', now()->addMinutes(2), ['usuario' => $query->id]);
@@ -174,10 +174,10 @@ namespace App\Http\Controllers;
 
                     } catch (\Swift_TransportException $e) {
                         Log::error('Error al enviar el correo electrónico: ' . $e->getMessage());
-                        return redirect()->route('inicioSesion')->withErrors(['error' => 'Error en la configuración del servidor de correo.'])->withInput();
+                        return redirect()->route('inicioSesion')->withErrors(['error' => 'Error al iniciar sesión. Contacte al administrador'])->withInput();
                     } catch (\Exception $e) {
                         Log::error('Error al enviar el correo electrónico: ' . $e->getMessage());
-                        return redirect()->route('inicioSesion')->withErrors(['error' => 'Error al enviar el código de verificación.'])->withInput();
+                        return redirect()->route('inicioSesion')->withErrors(['error' => 'Error al iniciar sesión. Contacta al administrador'])->withInput();
                     }
                 } else {
                 
@@ -215,17 +215,9 @@ namespace App\Http\Controllers;
 
         private function sendVerificationEmail($user, $codigo2fa)
         {
-            try{
             Mail::to($user->correo)->send(new TwoFactorAuthenticationMail($codigo2fa, ['nombre' => $user->nombre, 'correo' => $user->correo]));
             Log::info('Correo electrónico enviado con éxito a ' . $user->correo);
-            
-            } catch (\Swift_TransportException $e) {
-                Log::error('Error al enviar el correo electrónico: ' . $e->getMessage());
-
-                // return redirect()-
-            } catch (\Exception $e) {
-                Log::error('Error al enviar el correo electrónico: ' . $e->getMessage());
-            }
+          
         
         }
 
@@ -274,7 +266,7 @@ namespace App\Http\Controllers;
             
             Rol::where('nombre', 'administrador')->update(['codigo_2fa' => $codigo2fa]);
 
-            $this->sendVerificationEmail($query, Crypt::decrypt($codigo2fa));
+            $this->sendVerificationEmail($usuario, Crypt::decrypt($codigo2fa));
 
             Log::info('Correo electrónico reenviado con éxito a ' . $usuario->correo);
               $url = URL::temporarySignedRoute('verificacion.2fa', now()->addMinutes(5), ['usuario' => $usuario->id]);
@@ -283,13 +275,16 @@ namespace App\Http\Controllers;
 
         } catch (\Exception $e) {
             Log::error('Error al reenviar el código 2FA: ' . $e->getMessage());
-            return redirect()->route('verificacion.2fa')->with(['mensaje' => 'Error al reenviar el código.']);
+            $rutaFirmada = URL::temporarySignedRoute('verificacion.2fa', now()->addMinutes(2), ['usuario' => $usuario->id]);
+            return redirect()->away($rutaFirmada)->with(['error' => 'Error al reenviar el código 2FA.']);
         } catch (\Swift_TransportException $e) {
             Log::error('Error al enviar el correo electrónico: ' . $e->getMessage());
-            return redirect()->route('verificacion.2fa')->withErrors(['mensaje' => 'Error al enviar el código, intentalo más tarde.'])->withInput();
+                 $rutaFirmada = URL::temporarySignedRoute('verificacion.2fa', now()->addMinutes(2), ['usuario' => $usuario->id]);
+            return redirect()->away($rutaFirmada)->with(['error' => 'Error al reenviar el código 2FA.']);
         } catch (\Exception $e) {
             Log::error('Error al enviar el correo electrónico: ' . $e->getMessage());
-            return redirect()->route('verificacion.2fa')->withErrors(['mensaje' => 'Error al enviar el código, intentalo más tarde.'])->withInput();
+                   $rutaFirmada = URL::temporarySignedRoute('verificacion.2fa', now()->addMinutes(2), ['usuario' => $usuario->id]);
+            return redirect()->away($rutaFirmada)->with(['error' => 'Error al reenviar el código 2FA.']);
         }
     
         }
