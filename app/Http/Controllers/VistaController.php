@@ -63,6 +63,9 @@ class VistaController extends Controller
         }
 
         $usuario = Auth::user();
+        if(!$usuario->esUsuario()){
+            return redirect()->route('inicioSesion')->with(['mensaje' => 'Acceso no autorizado, inicie sesión.']);
+        }
         return view('Auth.inicioUsuario', ['usuario' => $usuario]);
     }
 

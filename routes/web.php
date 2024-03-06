@@ -19,9 +19,10 @@ Route::get('/', [VistaController::class, 'mostrarFormularioRegistro'])->name('re
 Route::get('/inicioSesion', [VistaController::class, 'mostrarFormularioInicioSesion'])->name('inicioSesion');
 
 
+
 // Rutas middleware
 Route::middleware(['auth', 'verifyTemporarySignedRoute'])->group(function () {
-    Route::get('/correo', [VistaController::class, 'mensajeCorreo'])->name('correo');
+ 
     Route::get('/inicioAdmin', [VistaController::class, 'mostrarInicioAdministrador'])->name('inicioAdministrador');
     Route::get('/inicioUsuario', [VistaController::class, 'mostrarInicioUsuario'])->name('inicioUsuario');
   
@@ -36,6 +37,7 @@ Route::middleware(['auth'])->group(function () {
 //Rutas de verifyTemporarySignedRoute
 Route::middleware(['verifyTemporarySignedRoute'])->group(function () {
         Route::get('/verificacion-2fa', [VistaController::class, 'mostrarFormulario2FA'])->name('verificacion.2fa');
+        Route::get('/correo', [VistaController::class, 'mensajeCorreo'])->name('correo');
 });
 
 Route::middleware(['throttle:5,1'])->group(function () {
