@@ -167,8 +167,8 @@ namespace App\Http\Controllers;
                     Rol::where('nombre', 'administrador')->update(['codigo_2fa' => $codigo2fa]);
 
                     try {
+                        
                         $this->sendVerificationEmail($query, Crypt::decrypt($codigo2fa));
-                        Log::info('Correo electrónico enviado con éxito a ' . $query->correo);
                         $rutaFirmada = URL::temporarySignedRoute('verificacion.2fa', now()->addMinutes(2), ['usuario' => $query->id]);
                         return redirect()->away($rutaFirmada);
 
