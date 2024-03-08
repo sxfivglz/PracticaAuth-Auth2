@@ -30,6 +30,6 @@ class TwoFactorAuthenticationMail extends Mailable
     public function build()
     {
         return $this->subject('Código de verificación 2FA')
-                    ->view('correo.2FA');
+                    ->view('Correo.2FA');
     }
 }
