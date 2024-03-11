@@ -22,6 +22,7 @@ namespace App\Http\Controllers;
     use Illuminate\Routing\Exceptions\InvalidSignatureException;
     use Illuminate\Support\Facades\Route;
     use Illuminate\Cache\RateLimiter;
+    use Illuminate\Support\Facades\Cookie;
 
     class UsuarioController extends Controller
 
@@ -334,6 +335,7 @@ namespace App\Http\Controllers;
         {
         try {
         Auth::logout();
+        Cookie::forget('app_session');
         return redirect()->route('inicioSesion')->with(['exito' => 'Sesión cerrada']);
         } catch (\Exception $e) {
         Log::error('Error al cerrar sesión: ' . $e->getMessage());

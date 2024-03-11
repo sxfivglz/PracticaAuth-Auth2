@@ -43,30 +43,41 @@ class VistaController extends Controller
 
     public function mostrarInicioAdministrador(Request $request)
     {
+    try{
        $usuario = Auth::user();
-        if (!$request->hasValidSignature()) {
+        if(Auth::check() && !$usuario->roles()&& !$request->hasValidSignature()){
+            Log::info('Acceso no autorizado en mostrarInicioAdministrador');
             return redirect()->route('inicioSesion')->with(['mensaje' => 'Acceso no autorizado, inicie sesión.']);
         }
-
         $url = URL::current();
         Log::info('URL en mostrarInicioAdministrador: ' . $url);
-
        
         return view('Auth.inicioAdmin', ['usuario' => $usuario]);
+    }catch(InvalidSignatureException $e){
+        Log::info('Error en mostrarInicioAdministrador: ' . $e->getMessage());
+        return redirect()->route('inicioSesion')->with(['mensaje' => 'Acceso no autorizado, inicie sesión.']);
+    }catch(\Exception $e){
+        Log::info('Error en mostrarInicioAdministrador: ' . $e->getMessage());
+        return redirect()->route('inicioSesion')->with(['mensaje' => 'Acceso no autorizado, inicie sesión.']);
+    }
     }
 
     public function mostrarInicioUsuario(Request $request)
     {
-    
-        if (!$request->hasValidSignature()) {
-               return redirect()->route('inicioSesion')->with(['mensaje' => 'Acceso no autorizado, inicie sesión.']);
-        }
-
+        try{
         $usuario = Auth::user();
-        if(!$usuario->esUsuario()){
+        if(Auth::check() && !$usuario->roles()&& !$request->hasValidSignature()){
+            Log::info('Acceso no autorizado en mostrarInicioUsuario');
             return redirect()->route('inicioSesion')->with(['mensaje' => 'Acceso no autorizado, inicie sesión.']);
         }
         return view('Auth.inicioUsuario', ['usuario' => $usuario]);
+    }catch(InvalidSignatureException $e){
+        Log::info('Error en mostrarInicioUsuario: ' . $e->getMessage());
+        return redirect()->route('inicioSesion')->with(['mensaje' => 'Acceso no autorizado, inicie sesión.']);
+    }catch(\Exception $e){
+        Log::info('Error en mostrarInicioUsuario: ' . $e->getMessage());
+        return redirect()->route('inicioSesion')->with(['mensaje' => 'Acceso no autorizado, inicie sesión.']);
+    }
     }
 
     public function mensajeCorreo(Request $request)

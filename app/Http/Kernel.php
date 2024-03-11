@@ -70,6 +70,7 @@ class Kernel extends HttpKernel
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
         'verifyTemporarySignedRoute' => \App\Http\Middleware\VerifyTemporarySignedRoute::class,
+        'noBack' => \App\Http\Middleware\NoBack::class,
 
 
     ];

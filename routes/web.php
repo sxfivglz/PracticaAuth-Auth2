@@ -19,7 +19,7 @@ Route::get('/', [VistaController::class, 'mostrarFormularioRegistro'])->name('re
 Route::get('/inicioSesion', [VistaController::class, 'mostrarFormularioInicioSesion'])->name('inicioSesion');
 
 
-
+Route::middleware(['noBack'])->group(function () {
 // Rutas middleware
 Route::middleware(['auth', 'verifyTemporarySignedRoute'])->group(function () {
  
@@ -45,6 +45,7 @@ Route::middleware(['throttle:5,1'])->group(function () {
   Route::post('/registrar', [UsuarioController::class, 'registrarUsuario'])->name('registrar');
   Route::post('/verificar-2fa', [UsuarioController::class, 'verificar2FA'])->name('verificar.2fa');
   Route::post('/reenviar-2fa', [UsuarioController::class, 'reenviarCodigo2FA'])->name('reenviar.2fa');
+});
 });
 
   
