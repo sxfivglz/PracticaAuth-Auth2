@@ -24,6 +24,7 @@ class VistaController extends Controller
 
     public function mostrarFormulario2FA(Request $request)
     {
+        
     if (!$request->hasValidSignature()) {
         return redirect()->route('inicioSesion')->with(['mensaje' => 'Acceso no autorizado, inicie sesión.']);
     }
